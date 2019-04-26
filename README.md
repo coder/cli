@@ -1,14 +1,22 @@
 # cli
 
-A minimal, command-oriented CLI packages.
+A minimal, command-oriented CLI package.
 
 [![GoDoc](https://godoc.org/github.com/golang/gddo?status.svg)](https://godoc.org/go.coder.com/cli)
 
 ## Features
 
 - Very small, simple API.
-- Uses stdlib as much as possible.
-- 0 dependencies.
+- Uses standard `flag` package as much as possible.
+- No external dependencies.
+- Subcommands.
+- Auto-generated help.
+
+## Install
+
+```bash
+go get -u go.coder.com/cli
+```
 
 ## Examples
 
@@ -82,7 +90,6 @@ func (c *subcmd) Spec() cli.CommandSpec {
 }
 
 type cmd struct {
-    message string
 }
 
 func (c *cmd) Run(fl *flag.FlagSet) {
@@ -105,8 +112,6 @@ func (c *cmd) Subcommands() []cli.Command {
 }
 
 func main() {
-    cli.RunRoot(&cmd{message: "subcommands"})
+    cli.RunRoot(&cmd{})
 }
-
-
 ```

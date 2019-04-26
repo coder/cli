@@ -23,7 +23,6 @@ func (c *subcmd) Spec() cli.CommandSpec {
 }
 
 type cmd struct {
-	message string
 }
 
 func (c *cmd) Run(fl *flag.FlagSet) {
@@ -46,5 +45,5 @@ func (c *cmd) Subcommands() []cli.Command {
 }
 
 func main() {
-	cli.RunRoot(&cmd{message: "subcommands"})
+	cli.RunRoot(&cmd{})
 }

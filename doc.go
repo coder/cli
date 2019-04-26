@@ -11,7 +11,4 @@
 //  	cli.FlaggedCommand
 //  	cli.ParentCommand
 //  } = new(rootCmd)
-//
-// This package is exported since we think it could be interesting to the community,
-// but the API is subject to change in support of sail.
 package cli
