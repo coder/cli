@@ -19,6 +19,10 @@ type CommandSpec struct {
 	// Desc is the description of the command.
 	// The first line is used as an abbreviated description.
 	Desc string
+
+	// Hidden indicates that this command should not show up in it's parent's
+	// subcommand help.
+	Hidden bool
 }
 
 // ShortDesc returns the first line of Desc.

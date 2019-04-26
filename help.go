@@ -50,6 +50,10 @@ func renderHelp(cmd Command, fl *flag.FlagSet, w io.Writer) {
 			fmt.Fprint(w, "Commands:\n")
 		}
 		for _, cmd := range pc.Subcommands() {
+			if cmd.Spec().Hidden {
+				continue
+			}
+
 			fmt.Fprintf(w, "\t%v\t%v\n", cmd.Spec().Name, cmd.Spec().ShortDesc())
 		}
 	}
