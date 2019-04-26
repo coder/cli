@@ -61,6 +61,16 @@ func main() {
 }
 
 ```
+renders a help like
+
+```
+Usage: simple-example [flags]
+
+This is a simple example of the cli package.
+
+simple-example flags:
+	-v	sets verbose mode	(false)
+```
 
 ### Subcommands
 
@@ -114,4 +124,15 @@ func (c *cmd) Subcommands() []cli.Command {
 func main() {
     cli.RunRoot(&cmd{})
 }
+```
+
+renders a help like
+
+```
+Usage: subcommand [flags]
+
+This is a simple example of subcommands.
+
+Commands:
+	sub	This is a simple subcommand.
 ```

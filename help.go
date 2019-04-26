@@ -18,7 +18,7 @@ func renderFlagHelp(fl *flag.FlagSet, w io.Writer) {
 	var count int
 	fl.VisitAll(func(f *flag.Flag) {
 		if count == 0 {
-			fmt.Fprintf(w, "%v flags:\n", fl.Name())
+			fmt.Fprintf(w, "\n%v flags:\n", fl.Name())
 		}
 
 		count++
