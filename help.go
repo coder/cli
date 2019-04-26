@@ -15,9 +15,12 @@ func flagDashes(name string) string {
 }
 
 func renderFlagHelp(fl *flag.FlagSet, w io.Writer) {
-	fmt.Fprintf(w, "%v flags:\n", fl.Name())
 	var count int
 	fl.VisitAll(func(f *flag.Flag) {
+		if count == 0 {
+			fmt.Fprintf(w, "%v flags:\n", fl.Name())
+		}
+
 		count++
 		if f.DefValue == "" {
 			fmt.Fprintf(w, "\t%v%v\t%v\n", flagDashes(f.Name), f.Name, f.Usage)
@@ -25,9 +28,6 @@ func renderFlagHelp(fl *flag.FlagSet, w io.Writer) {
 			fmt.Fprintf(w, "\t%v%v\t%v\t(%v)\n", flagDashes(f.Name), f.Name, f.Usage, f.DefValue)
 		}
 	})
-	if count == 0 {
-		fmt.Fprintf(w, "\n")
-	}
 }
 
 // renderHelp generates a command's help page.
@@ -36,7 +36,7 @@ func renderHelp(cmd Command, fl *flag.FlagSet, w io.Writer) {
 	fmt.Fprintf(w, "Usage: %v %v\n\n",
 		fl.Name(), cmd.Spec().Usage,
 	)
-	fmt.Fprintf(w, "%v\n\n", cmd.Spec().Desc)
+	fmt.Fprintf(w, "%v\n", cmd.Spec().Desc)
 
 	// Render flag help.
 	renderFlagHelp(fl, w)
@@ -45,7 +45,7 @@ func renderHelp(cmd Command, fl *flag.FlagSet, w io.Writer) {
 	pc, ok := cmd.(ParentCommand)
 	if ok {
 		if len(pc.Subcommands()) > 0 {
-            // Give some space from flags.
+			// Give some space from flags.
 			fmt.Fprintf(w, "\n")
 			fmt.Fprint(w, "Commands:\n")
 		}
