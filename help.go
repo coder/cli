@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"text/tabwriter"
 	"unicode/utf8"
 )
 
@@ -49,12 +50,21 @@ func renderHelp(cmd Command, fl *flag.FlagSet, w io.Writer) {
 			fmt.Fprintf(w, "\n")
 			fmt.Fprint(w, "Commands:\n")
 		}
+
+		tw := tabwriter.NewWriter(w, 0, 0, 2, ' ', tabwriter.StripEscape)
 		for _, cmd := range pc.Subcommands() {
 			if cmd.Spec().Hidden {
 				continue
 			}
 
-			fmt.Fprintf(w, "\t%v\t%v\n", cmd.Spec().Name, cmd.Spec().ShortDesc())
+			// \xFF is used to escape the leading \t so tabwriter ignores it
+			fmt.Fprintf(tw,
+				"\xFF\t\xFF%v\t%v\n",
+				cmd.Spec().Name,
+				cmd.Spec().ShortDesc(),
+			)
 		}
+
+		tw.Flush()
 	}
 }
