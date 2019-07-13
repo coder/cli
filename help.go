@@ -17,6 +17,9 @@ func flagDashes(name string) string {
 	return "-"
 }
 
+// fmtDefValue adds quotes around default value strings that contain spaces so
+// the help representation matches what you would need to do when running a
+// command.
 func fmtDefValue(value interface{}) string {
 	switch v := value.(type) {
 	case string:
