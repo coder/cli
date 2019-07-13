@@ -4,7 +4,9 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"strings"
 	"text/tabwriter"
+	"unicode"
 	"unicode/utf8"
 )
 
@@ -13,6 +15,22 @@ func flagDashes(name string) string {
 		return "--"
 	}
 	return "-"
+}
+
+// fmtDefValue adds quotes around default value strings that contain spaces so
+// the help representation matches what you would need to do when running a
+// command.
+func fmtDefValue(value interface{}) string {
+	switch v := value.(type) {
+	case string:
+		if strings.IndexFunc(v, unicode.IsSpace) != -1 {
+			return fmt.Sprintf(`"%v"`, v)
+		}
+		return v
+
+	default:
+		return fmt.Sprintf("%v", v)
+	}
 }
 
 func renderFlagHelp(fl *flag.FlagSet, w io.Writer) {
@@ -26,7 +44,7 @@ func renderFlagHelp(fl *flag.FlagSet, w io.Writer) {
 		if f.DefValue == "" {
 			fmt.Fprintf(w, "\t%v%v\t%v\n", flagDashes(f.Name), f.Name, f.Usage)
 		} else {
-			fmt.Fprintf(w, "\t%v%v\t%v\t(%v)\n", flagDashes(f.Name), f.Name, f.Usage, f.DefValue)
+			fmt.Fprintf(w, "\t%v%v=%v\t%v\n", flagDashes(f.Name), f.Name, fmtDefValue(f.DefValue), f.Usage)
 		}
 	})
 }
