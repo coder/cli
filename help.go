@@ -33,6 +33,9 @@ func fmtDefValue(value interface{}) string {
 	}
 }
 
+// \xFF is used to escape a \t so tabwriter ignores it.
+const tabEscape = "\xFF"
+
 func renderFlagHelp(fl *flag.FlagSet, w io.Writer) {
 	var count int
 	fl.VisitAll(func(f *flag.Flag) {
@@ -42,9 +45,9 @@ func renderFlagHelp(fl *flag.FlagSet, w io.Writer) {
 
 		count++
 		if f.DefValue == "" {
-			fmt.Fprintf(w, "\t%v%v\t%v\n", flagDashes(f.Name), f.Name, f.Usage)
+			fmt.Fprintf(w, tabEscape+"\t%v%v\t%v\n", flagDashes(f.Name), f.Name, f.Usage)
 		} else {
-			fmt.Fprintf(w, "\t%v%v=%v\t%v\n", flagDashes(f.Name), f.Name, fmtDefValue(f.DefValue), f.Usage)
+			fmt.Fprintf(w, tabEscape+"\t%v%v=%v\t%v\n", flagDashes(f.Name), f.Name, fmtDefValue(f.DefValue), f.Usage)
 		}
 	})
 }
@@ -57,8 +60,11 @@ func renderHelp(cmd Command, fl *flag.FlagSet, w io.Writer) {
 	)
 	fmt.Fprintf(w, "%v\n", cmd.Spec().Desc)
 
+	tw := tabwriter.NewWriter(w, 0, 4, 2, ' ', tabwriter.StripEscape)
+	defer tw.Flush()
+
 	// Render flag help.
-	renderFlagHelp(fl, w)
+	renderFlagHelp(fl, tw)
 
 	// Render subcommand summaries.
 	pc, ok := cmd.(ParentCommand)
@@ -69,20 +75,16 @@ func renderHelp(cmd Command, fl *flag.FlagSet, w io.Writer) {
 			fmt.Fprint(w, "Commands:\n")
 		}
 
-		tw := tabwriter.NewWriter(w, 0, 0, 2, ' ', tabwriter.StripEscape)
 		for _, cmd := range pc.Subcommands() {
 			if cmd.Spec().Hidden {
 				continue
 			}
 
-			// \xFF is used to escape the leading \t so tabwriter ignores it
 			fmt.Fprintf(tw,
-				"\xFF\t\xFF%v\t%v\n",
+				tabEscape+"\t"+tabEscape+"%v\t%v\n",
 				cmd.Spec().Name,
 				cmd.Spec().ShortDesc(),
 			)
 		}
-
-		tw.Flush()
 	}
 }
