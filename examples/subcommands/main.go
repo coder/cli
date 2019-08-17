@@ -14,8 +14,8 @@ func (c *subcmd) Run(fl *flag.FlagSet) {
 	fmt.Println("subcommand invoked")
 }
 
-func (c *subcmd) Spec() cli.CommandSpec {
-	return cli.CommandSpec{
+func (c *subcmd) Spec() cli.Config {
+	return cli.Config{
 		Name:  "sub",
 		Usage: "",
 		Desc:  `This is a simple subcommand.`,
@@ -30,8 +30,8 @@ func (c *cmd) Run(fl *flag.FlagSet) {
 	fl.Usage()
 }
 
-func (c *cmd) Spec() cli.CommandSpec {
-	return cli.CommandSpec{
+func (c *cmd) Spec() cli.Config {
+	return cli.Config{
 		Name:  "subcommand",
 		Usage: "[flags]",
 		Desc:  `This is a simple example of subcommands.`,

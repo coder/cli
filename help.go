@@ -53,38 +53,36 @@ func renderFlagHelp(fl *flag.FlagSet, w io.Writer) {
 }
 
 // renderHelp generates a command's help page.
-func renderHelp(cmd Command, fl *flag.FlagSet, w io.Writer) {
+func renderHelp(s *Config,  w io.Writer) {
 	// Render usage and description.
 	fmt.Fprintf(w, "Usage: %v %v\n\n",
-		fl.Name(), cmd.Spec().Usage,
+		s.Flags.Name(), s.Usage,
 	)
-	fmt.Fprintf(w, "%v\n", cmd.Spec().Desc)
+	fmt.Fprintf(w, "%v\n", s.Desc)
 
 	tw := tabwriter.NewWriter(w, 0, 4, 2, ' ', tabwriter.StripEscape)
 	defer tw.Flush()
 
 	// Render flag help.
-	renderFlagHelp(fl, tw)
+	renderFlagHelp(s.Flags, tw)
 
 	// Render subcommand summaries.
-	pc, ok := cmd.(ParentCommand)
-	if ok {
-		if len(pc.Subcommands()) > 0 {
-			// Give some space from flags.
-			fmt.Fprintf(w, "\n")
-			fmt.Fprint(w, "Commands:\n")
+	if len(s.Subcommands) > 0 {
+		// Give some space from flags.
+		fmt.Fprintf(w, "\n")
+		fmt.Fprint(w, "Commands:\n")
+	}
+
+	for _, cmd := range s.Subcommands {
+		sc := commandConfig(cmd)
+		if sc.Hidden {
+			continue
 		}
 
-		for _, cmd := range pc.Subcommands() {
-			if cmd.Spec().Hidden {
-				continue
-			}
-
-			fmt.Fprintf(tw,
-				tabEscape+"\t"+tabEscape+"%v\t%v\n",
-				cmd.Spec().Name,
-				cmd.Spec().ShortDesc(),
-			)
-		}
+		fmt.Fprintf(tw,
+			tabEscape+"\t"+tabEscape+"%v\t%v\n",
+			sc.Name,
+			sc.ShortDesc(),
+		)
 	}
 }

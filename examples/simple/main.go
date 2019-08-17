@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 
 	"go.coder.com/cli"
@@ -11,23 +10,19 @@ type cmd struct {
 	verbose bool
 }
 
-func (c *cmd) Run(fl *flag.FlagSet) {
+func (c *cmd) Run(cf *cli.Config) {
 	if c.verbose {
 		fmt.Println("verbose enabled")
 	}
 	fmt.Println("we run")
 }
 
-func (c *cmd) Spec() cli.CommandSpec {
-	return cli.CommandSpec{
-		Name:  "simple-example",
-		Usage: "[flags]",
-		Desc:  `This is a simple example of the cli package.`,
-	}
-}
+func (c *cmd) Configure(cf *cli.Config) {
+	cf.Name = "simple-example"
+	cf.Usage = "[flags]"
+	cf.Desc = `This is a simple example of the cli package.`
 
-func (c *cmd) RegisterFlags(fl *flag.FlagSet) {
-	fl.BoolVar(&c.verbose, "v", false, "sets verbose mode")
+	cf.Flags.BoolVar(&c.verbose, "v", false, "sets verbose mode")
 }
 
 func main() {

@@ -2,7 +2,9 @@ package cli
 
 import (
 	"flag"
+	"math/rand"
 	"os"
+	"strconv"
 )
 
 func appendParent(parent string, add string) string {
@@ -10,6 +12,18 @@ func appendParent(parent string, add string) string {
 		return add + " "
 	}
 	return parent + add + " "
+}
+
+// commandConfig gets a configuration from a command.
+func commandConfig(cmd Command) *Config {
+	c := &Config{
+		Flags: flag.NewFlagSet(strconv.FormatInt(rand.Int63(), 10), flag.ExitOnError),
+	}
+	cmd.Configure(c)
+	c.Flags.Usage = func() {
+		renderHelp(c, os.Stderr)
+	}
+	return c
 }
 
 // Run sets up flags, helps, and executes the command with the provided
@@ -20,40 +34,33 @@ func appendParent(parent string, add string) string {
 //
 // Use RunRoot if this package is managing the entire CLI.
 func Run(cmd Command, args []string, parent string) {
-	fl := flag.NewFlagSet(parent+""+cmd.Spec().Name, flag.ExitOnError)
+	c := commandConfig(cmd)
 
-	if fc, ok := cmd.(FlaggedCommand); ok {
-		fc.RegisterFlags(fl)
-	}
-
-	fl.Usage = func() {
-		renderHelp(cmd, fl, os.Stderr)
-	}
-
-	if cmd.Spec().RawArgs {
+	if c.RawArgs {
 		// Use `--` to return immediately when parsing the flags.
 		args = append([]string{"--"}, args...)
 	}
-	_ = fl.Parse(args)
 
-	subcommandArg := fl.Arg(0)
+	_ = c.Flags.Parse(args)
+	subcommandArg := c.Flags.Arg(0)
 
 	// Route to subcommand.
-	if pc, ok := cmd.(ParentCommand); ok && subcommandArg != "" {
-		for _, subcommand := range pc.Subcommands() {
-			if subcommand.Spec().Name != subcommandArg {
+	if c.isParent() && subcommandArg != "" {
+		for _, subcommand := range c.Subcommands {
+			sc := commandConfig(subcommand)
+			if sc.Name != subcommandArg {
 				continue
 			}
 
 			Run(
-				subcommand, fl.Args()[1:],
-				appendParent(parent, cmd.Spec().Name),
+				subcommand, c.Flags.Args()[1:],
+				appendParent(parent, sc.Name),
 			)
 			return
 		}
 	}
 
-	cmd.Run(fl)
+	cmd.Run(c)
 }
 
 // RunRoot calls Run with the process's arguments.
