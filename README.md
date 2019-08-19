@@ -7,8 +7,8 @@ A minimal, command-oriented CLI package.
 ## Features
 
 - Very small, simple API.
-- Uses standard `flag` package as much as possible.
-- No external dependencies.
+- Support for POSIX flags.
+- Only external dependency is [spf13/pflag](https://github.com/spf13/pflag).
 - Subcommands.
 - Auto-generated help.
 
@@ -37,7 +37,7 @@ type cmd struct {
     verbose bool
 }
 
-func (c *cmd) Run(fl *flag.FlagSet) {
+func (c *cmd) Run(fl *pflag.FlagSet) {
     if c.verbose {
         fmt.Println("verbose enabled")
     }
@@ -52,7 +52,7 @@ func (c *cmd) Spec() cli.CommandSpec {
     }
 }
 
-func (c *cmd) RegisterFlags(fl *flag.FlagSet) {
+func (c *cmd) RegisterFlags(fl *pflag.FlagSet) {
     fl.BoolVar(&c.verbose, "v", false, "sets verbose mode")
 }
 
@@ -87,7 +87,7 @@ import (
 type subcmd struct {
 }
 
-func (c *subcmd) Run(fl *flag.FlagSet) {
+func (c *subcmd) Run(fl *pflag.FlagSet) {
     fmt.Println("subcommand invoked")
 }
 
@@ -102,7 +102,7 @@ func (c *subcmd) Spec() cli.CommandSpec {
 type cmd struct {
 }
 
-func (c *cmd) Run(fl *flag.FlagSet) {
+func (c *cmd) Run(fl *pflag.FlagSet) {
     // This root command has no default action, so print the help.
     fl.Usage()
 }

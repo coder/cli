@@ -1,9 +1,9 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 
+	"github.com/spf13/pflag"
 	"go.coder.com/cli"
 )
 
@@ -11,7 +11,7 @@ type cmd struct {
 	verbose bool
 }
 
-func (c *cmd) Run(fl *flag.FlagSet) {
+func (c *cmd) Run(fl *pflag.FlagSet) {
 	if c.verbose {
 		fmt.Println("verbose enabled")
 	}
@@ -26,8 +26,8 @@ func (c *cmd) Spec() cli.CommandSpec {
 	}
 }
 
-func (c *cmd) RegisterFlags(fl *flag.FlagSet) {
-	fl.BoolVar(&c.verbose, "v", false, "sets verbose mode")
+func (c *cmd) RegisterFlags(fl *pflag.FlagSet) {
+	fl.BoolVarP(&c.verbose, "verbose", "v", false, "sets verbose mode")
 }
 
 func main() {
