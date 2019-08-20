@@ -1,13 +1,14 @@
 package cli
 
 import (
-	"flag"
 	"fmt"
 	"io"
 	"strings"
 	"text/tabwriter"
 	"unicode"
 	"unicode/utf8"
+
+	"github.com/spf13/pflag"
 )
 
 func flagDashes(name string) string {
@@ -36,27 +37,18 @@ func fmtDefValue(value interface{}) string {
 // \xFF is used to escape a \t so tabwriter ignores it.
 const tabEscape = "\xFF"
 
-func renderFlagHelp(fl *flag.FlagSet, w io.Writer) {
-	var count int
-	fl.VisitAll(func(f *flag.Flag) {
-		if count == 0 {
-			fmt.Fprintf(w, "\n%v flags:\n", fl.Name())
-		}
-
-		count++
-		if f.DefValue == "" {
-			fmt.Fprintf(w, tabEscape+"\t%v%v\t%v\n", flagDashes(f.Name), f.Name, f.Usage)
-		} else {
-			fmt.Fprintf(w, tabEscape+"\t%v%v=%v\t%v\n", flagDashes(f.Name), f.Name, fmtDefValue(f.DefValue), f.Usage)
-		}
-	})
+func renderFlagHelp(fullName string, fl *pflag.FlagSet, w io.Writer) {
+	if fl.HasFlags() {
+		fmt.Fprintf(w, "\n%s flags:\n", fullName)
+		fmt.Fprint(w, fl.FlagUsages())
+	}
 }
 
 // renderHelp generates a command's help page.
-func renderHelp(cmd Command, fl *flag.FlagSet, w io.Writer) {
+func renderHelp(fullName string, cmd Command, fl *pflag.FlagSet, w io.Writer) {
 	// Render usage and description.
 	fmt.Fprintf(w, "Usage: %v %v\n\n",
-		fl.Name(), cmd.Spec().Usage,
+		fullName, cmd.Spec().Usage,
 	)
 	fmt.Fprintf(w, "%v\n", cmd.Spec().Desc)
 
@@ -64,7 +56,7 @@ func renderHelp(cmd Command, fl *flag.FlagSet, w io.Writer) {
 	defer tw.Flush()
 
 	// Render flag help.
-	renderFlagHelp(fl, tw)
+	renderFlagHelp(fullName, fl, tw)
 
 	// Render subcommand summaries.
 	pc, ok := cmd.(ParentCommand)

@@ -1,8 +1,9 @@
 package cli
 
 import (
-	"flag"
 	"strings"
+
+	"github.com/spf13/pflag"
 )
 
 // CommandSpec describes a Command's usage.
@@ -38,7 +39,7 @@ type Command interface {
 	// Spec returns metadata about the command.
 	Spec() CommandSpec
 	// Run invokes the command's main routine with parsed flags.
-	Run(fl *flag.FlagSet)
+	Run(fl *pflag.FlagSet)
 }
 
 // ParentCommand is an optional interface for commands that have subcommands.
@@ -52,5 +53,5 @@ type ParentCommand interface {
 // FlaggedCommand is an optional interface for commands that have flags.
 type FlaggedCommand interface {
 	// RegisterFlags lets the command register flags which be sent to Handle.
-	RegisterFlags(fl *flag.FlagSet)
+	RegisterFlags(fl *pflag.FlagSet)
 }

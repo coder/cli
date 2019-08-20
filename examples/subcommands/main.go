@@ -1,16 +1,16 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 
+	"github.com/spf13/pflag"
 	"go.coder.com/cli"
 )
 
 type subcmd struct {
 }
 
-func (c *subcmd) Run(fl *flag.FlagSet) {
+func (c *subcmd) Run(fl *pflag.FlagSet) {
 	fmt.Println("subcommand invoked")
 }
 
@@ -25,7 +25,7 @@ func (c *subcmd) Spec() cli.CommandSpec {
 type cmd struct {
 }
 
-func (c *cmd) Run(fl *flag.FlagSet) {
+func (c *cmd) Run(fl *pflag.FlagSet) {
 	// This root command has no default action, so print the help.
 	fl.Usage()
 }
