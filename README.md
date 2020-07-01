@@ -27,9 +27,9 @@ See `examples/` for more.
 package main
 
 import (
-    "flag"
     "fmt"
 
+    "github.com/spf13/pflag"
     "go.coder.com/cli"
 )
 
@@ -78,9 +78,9 @@ simple-example flags:
 package main
 
 import (
-    "flag"
     "fmt"
 
+    "github.com/spf13/pflag"
     "go.coder.com/cli"
 )
 
