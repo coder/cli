@@ -7,6 +7,8 @@ import (
 	"github.com/spf13/pflag"
 )
 
+type aliasMap map[Command][]string
+
 func appendParent(parent string, add string) string {
 	return parent + add + " "
 }
@@ -15,14 +17,24 @@ func appendParent(parent string, add string) string {
 // flags/args. If a subcommand is found, the parent args, subcommand args, and the subcommand will
 // be returned. If a subcommand isn't found, the args will be returned as is, the subcommand args
 // will be empty, and the subcommand will be nil.
-func splitArgs(subCmds []Command, args []string) (cmdArgs, subArgs []string, subCmd Command) {
+func splitArgs(subCmds []Command, args []string, aliases aliasMap) (cmdArgs, subArgs []string, subCmd Command) {
 	for i, arg := range args {
 		if strings.HasPrefix(arg, "-") {
 			continue
 		}
 
 		for _, subCommand := range subCmds {
-			if subCommand.Spec().Name == arg {
+			spec := subCommand.Spec()
+
+			if spec.HasAliases() {
+				for _, alias := range spec.Aliases {
+					if arg == alias {
+						return args[:i], args[i+1:], subCommand
+					}
+				}
+			}
+
+			if spec.Name == arg {
 				return args[:i], args[i+1:], subCommand
 			}
 		}
@@ -58,9 +70,21 @@ func Run(cmd Command, args []string, parent string) {
 		cmdArgs, subArgs []string
 		subCmd           Command
 	)
+
 	pc, isParentCmd := cmd.(ParentCommand)
 	if isParentCmd {
-		cmdArgs, subArgs, subCmd = splitArgs(pc.Subcommands(), args)
+		aliases := make(aliasMap)
+		subCmds := pc.Subcommands()
+
+		for _, sc := range subCmds {
+			spec := sc.Spec()
+
+			if spec.HasAliases() {
+				aliases[sc] = spec.Aliases
+			}
+		}
+
+		cmdArgs, subArgs, subCmd = splitArgs(subCmds, args, aliases)
 		if subCmd != nil {
 			args = cmdArgs
 		}

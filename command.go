@@ -23,15 +23,21 @@ type CommandSpec struct {
 	// RawArgs indicates that flags should not be parsed, and they should be deferred
 	// to the command.
 	RawArgs bool
-
 	// Hidden indicates that this command should not show up in it's parent's
 	// subcommand help.
 	Hidden bool
+	// Aliases contains a list of alternative names that can be used for a particular command.
+	Aliases []string
 }
 
 // ShortDesc returns the first line of Desc.
 func (c CommandSpec) ShortDesc() string {
 	return strings.Split(c.Desc, "\n")[0]
+}
+
+// HasAliases evaluates whether particular command has any alternative names.
+func (c CommandSpec) HasAliases() bool {
+	return len(c.Aliases) > 0
 }
 
 // Command describes a command or subcommand.

@@ -95,6 +95,7 @@ func (c *subcmd) Spec() cli.CommandSpec {
     return cli.CommandSpec{
         Name:  "sub",
         Usage: "",
+        Aliases: []string{"s"},
         Desc:  `This is a simple subcommand.`,
     }
 }
@@ -134,5 +135,5 @@ Usage: subcommand [flags]
 This is a simple example of subcommands.
 
 Commands:
-	sub	This is a simple subcommand.
+	s,sub -	This is a simple subcommand.
 ```
