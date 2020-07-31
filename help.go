@@ -52,10 +52,10 @@ func renderHelp(fullName string, cmd Command, fl *pflag.FlagSet, w io.Writer) {
 
 	// If the command has aliases, add them to the output as a comma-separated list.
 	if spec.HasAliases() {
-		fmt.Fprintf(&b, "Aliases: %v", spec.Aliases)
+		fmt.Fprintf(&b, "Aliases: %s\n\n", strings.Join(spec.Aliases, ", "))
 	}
 	// Render usage and description.
-	usageAndDesc := fmt.Sprintf("%s%s\n", b.String(), spec.Desc)
+	usageAndDesc := fmt.Sprintf("%sDescription: %s\n", b.String(), spec.Desc)
 	fmt.Fprint(w, usageAndDesc)
 
 	tw := tabwriter.NewWriter(w, 0, 4, 2, ' ', tabwriter.StripEscape)
@@ -80,7 +80,7 @@ func renderHelp(fullName string, cmd Command, fl *pflag.FlagSet, w io.Writer) {
 				continue
 			}
 
-			allNames := strings.Join(append(spec.Aliases, spec.Name), ",")
+			allNames := strings.Join(append(spec.Aliases, spec.Name), ", ")
 
 			fmt.Fprintf(tw,
 				tabEscape+"\t"+tabEscape+"%v\t- %v\n",
