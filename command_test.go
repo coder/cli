@@ -15,7 +15,7 @@ type (
 	// Mock for root/parent command.
 	mockParentCmd struct{}
 	// Mock subcommand with aliases and a nested sucommand of its own.
-	mockSubCmd struct{
+	mockSubCmd struct {
 		buf *bytes.Buffer
 	}
 	// Mock subcommand with aliases and no nested subcommands.
@@ -103,8 +103,8 @@ Commands:
 		fl := pflag.NewFlagSet(name, pflag.ExitOnError)
 		// If the help output doesn't contain the subcommand and
 		// isn't formatted the way we expect the test will fail.
-		renderHelp(name, cmd, fl, buf)
-		got := string(buf.Bytes())
+		renderHelp(buf, name, cmd, fl)
+		got := buf.String()
 		assert.Equal(t, t.Name(), expected, got)
 	})
 }
@@ -128,8 +128,8 @@ Description: A simple mock subcommand with aliases and no nested subcommands.
 `
 
 	for _, test := range []struct {
-		cmd            Command
 		name, expected string
+		cmd            Command
 	}{
 		{
 			name:     "subcmd w/nested subcmd.",
@@ -148,8 +148,8 @@ Description: A simple mock subcommand with aliases and no nested subcommands.
 			fl := pflag.NewFlagSet(name, pflag.ExitOnError)
 			// If the help output is not written to the buffer
 			// in the format we expect then the test will fail.
-			renderHelp(name, test.cmd, fl, buf)
-			got := string(buf.Bytes())
+			renderHelp(buf, name, test.cmd, fl)
+			got := buf.String()
 			assert.Equal(t, t.Name(), test.expected, got)
 		})
 	}

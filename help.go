@@ -45,7 +45,7 @@ func renderFlagHelp(fullName string, fl *pflag.FlagSet, w io.Writer) {
 }
 
 // renderHelp generates a command's help page.
-func renderHelp(fullName string, cmd Command, fl *pflag.FlagSet, w io.Writer) {
+func renderHelp(w io.Writer, fullName string, cmd Command, fl *pflag.FlagSet) {
 	var b strings.Builder
 	spec := cmd.Spec()
 	fmt.Fprintf(&b, "Usage: %v %v\n\n", fullName, spec.Usage)
@@ -54,9 +54,8 @@ func renderHelp(fullName string, cmd Command, fl *pflag.FlagSet, w io.Writer) {
 	if spec.HasAliases() {
 		fmt.Fprintf(&b, "Aliases: %s\n\n", strings.Join(spec.Aliases, ", "))
 	}
-	// Render usage and description.
-	usageAndDesc := fmt.Sprintf("%sDescription: %s\n", b.String(), spec.Desc)
-	fmt.Fprint(w, usageAndDesc)
+	// Print usage and description.
+	fmt.Fprintf(w, "%sDescription: %s\n", b.String(), spec.Desc)
 
 	tw := tabwriter.NewWriter(w, 0, 4, 2, ' ', tabwriter.StripEscape)
 	defer tw.Flush()
