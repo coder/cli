@@ -94,7 +94,7 @@ func Run(cmd Command, args []string, parent string) {
 	// Reassign the usage now that we've parsed the args
 	// so that we can render it manually.
 	fl.Usage = func() {
-		renderHelp(name, cmd, fl, os.Stderr)
+		renderHelp(os.Stderr, name, cmd, fl)
 	}
 	if err != nil {
 		fl.Usage()
