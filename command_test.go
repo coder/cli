@@ -82,7 +82,7 @@ func TestSubCmdAliases(t *testing.T) {
 			RunRoot(cmd)
 			// If "success" isn't written into the buffer
 			// then we failed to find the subcommand by alias.
-			got := string(subCmd.buf.Bytes())
+			got := subCmd.buf.String()
 			assert.Equal(t, t.Name(), "success", got)
 		})
 	}

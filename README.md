@@ -9,7 +9,7 @@ A minimal, command-oriented CLI package.
 - Very small, simple API.
 - Support for POSIX flags.
 - Only external dependency is [spf13/pflag](https://github.com/spf13/pflag).
-- Subcommands.
+- Subcommands and subcommand aliases.
 - Auto-generated help.
 
 ## Install
@@ -135,5 +135,5 @@ Usage: subcommand [flags]
 This is a simple example of subcommands.
 
 Commands:
-	s,sub -	This is a simple subcommand.
+	s, sub  - This is a simple subcommand.
 ```
